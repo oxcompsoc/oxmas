@@ -1,5 +1,8 @@
+# This is a code golfing challenge. The goal is to write a program equivalent to
+# this one, with the smallest number of bytes in the source file
+# You can use any programming language you like
 lyrics = [
-  "12 Drummers Drumming",
+  "Twelve Drummers Drumming",
   "Eleven Pipers Piping",
   "Ten Lords a Leaping",
   "Nine Ladies Dancing",
