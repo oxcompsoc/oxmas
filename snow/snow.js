@@ -1,5 +1,5 @@
 var GRAVITY = 5;
-var SNOW_NUMBER = 100;
+var SNOW_NUMBER = 500;
 var SNOW_SPREAD_FACTOR = 5;
 
 function draw(context, time, deltaTime) {
@@ -11,34 +11,21 @@ var snow = []
 var snowDepth = [];
 for (var x = 0; x <= 601; x++) snowDepth.push(0);
 
-function addRandomSnowParticle(x) {
-  snow.push({cx: x, x: x,
+function newSnowParticle(x) {
+  return {cx: x, x: x,
              y: -400 * Math.random(), 
              dy: 0, 
              noise: Math.random() * Math.PI,
              radius: 1 + Math.random(),
              noise2: Math.random() * 5,
-             resistance: GRAVITY * 0.2 * Math.random()})
+             resistance: GRAVITY * 0.2 * Math.random()};
 }
 
-function addSnow(fix) {
-  while (snow.length < SNOW_NUMBER) {
-    addRandomSnowParticle(600 * Math.random());
-    if (fix) {
-      var i = snow.length - 1;
-      var s = -snow[i].y;
-      var a = GRAVITY - snow[i].resistance;
-      var t = Math.sqrt(2 * s / a);
-      snow[i].dy = t * a
-      snow[i].y = 0;
-    }
-  }
+for (var i = 0; i < SNOW_NUMBER; i++) {
+  snow.push(newSnowParticle(Math.random() * 600));
 }
-
-addSnow(false);
 
 function updateSnow(t, dt) {
-  var newSnow = [];
   for (var i = 0; i < snow.length; i++) {
     if (snow[i].y >= 400 - snowDepth[Math.floor(snow[i].x)]) {
       for (var x = Math.max(0, Math.floor(snow[i].x - snow[i].radius * SNOW_SPREAD_FACTOR)); x <= Math.ceil(snow[i].x + snow[i].radius * SNOW_SPREAD_FACTOR) && x <= 600; x++) {
@@ -48,14 +35,14 @@ function updateSnow(t, dt) {
           snowDepth[x] += Math.sqrt(y2) / (SNOW_SPREAD_FACTOR * 4);
         }
       }
-    }
-    else {
-      newSnow.push(snow[i]);
+      snow[i] = newSnowParticle(Math.random() * 600);
+      var s = -snow[i].y;
+      var a = GRAVITY - snow[i].resistance;
+      var t = Math.sqrt(2 * s / a);
+      snow[i].dy = t * a
+      snow[i].y = 0;
     }
   }
-  
-  snow = newSnow;
-  addSnow(true);
 }
 
 function drawSnow(context, time, deltaTime) {
@@ -72,7 +59,6 @@ function drawSnow(context, time, deltaTime) {
   context.beginPath();
   context.moveTo(0, 400);
   for (var x = 0; x <= 600; x++) {
-    //Fake the value a little bit
     context.lineTo(x, 400 - snowDepth[x]);
   }
   context.lineTo(600, 400);
